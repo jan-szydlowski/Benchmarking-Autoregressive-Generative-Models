@@ -2,6 +2,13 @@ import torch
 from torch.optim import Adam
 from src.physics.energy import calculate_variational_free_energy, calculate_Ising_energy
 import time
+import numpy as np
+from src.models.transformer import Transformer_MODEL
+from src.models.van import VAN_MODEL
+from src.models.pixelcnn import PixelCNN_MODEL
+from src.models.lstm import LSTM_MODEL
+
+
 
 class Trainer():
     def __init__(
@@ -20,41 +27,42 @@ class Trainer():
         """
 
         self.n = n
+        self.num_spins = n*n
         self.n_layers = n_layers
         self.epochs = epochs
         self.beta = beta
         self.lr = lr
         self.batch_size = batch_size
 
-        if model == "Transformer_MODEL":
-            self.model = model(
-                emb_dim=Model_params['emb_dim'],
+        if model == "transformer":
+            self.model = Transformer_MODEL(
+                emb_dim=Model_params['embedding_dim'],
                 num_heads=Model_params['num_heads'],
                 num_of_spins=n*n,
                 n_layers=n_layers
             )
 
-        if model == "VAN_MODEL":
-            self.model = model(n=self.n, 
+        if model == "van":
+            self.model = VAN_MODEL(n=n, 
                                nb_layers=self.n_layers
                                )
             
-        if model == "PixelCNN_MODEL":
-            self.model = model(n=n, 
+        if model == "pixelcnn":
+            self.model = PixelCNN_MODEL(n=n, 
                                kernel_size=Model_params['kernel_size'], 
                                num_of_layers=self.n_layers, 
                                channels=Model_params['channels']
                                )
             
-        if model == "LSTM_MODEL":
-            self.model = model(n=self.n, 
+        if model == "lstm":
+            self.model = LSTM_MODEL(n=n, 
                                spin_placement_info=Model_params['spin_placement_info']
                                )
 
 
     def train_model(self):
         start_time = time.time()
-        self.vfe_std = []
+        self.magnetization = []
         self.vfe_mean = []
         self.ess_arr = []
         self.energy_per_spin_arr = []
@@ -79,7 +87,9 @@ class Trainer():
                 vfe = calculate_variational_free_energy(
                     self.beta,
                     log_prob,
-                    sampled_spins
+                    sampled_spins,
+                    self.batch_size,
+                    self.n
                 )
 
                 energy = calculate_Ising_energy(
@@ -94,8 +104,8 @@ class Trainer():
                 energy_per_spin.mean()
             )
 
-            self.vfe_std.append(
-                vfe.std()
+            self.magnetization.append(
+                np.array(sampled_spins.cpu()).sum()
             )
 
             self.vfe_mean.append(
@@ -144,9 +154,3 @@ class Trainer():
                 break
         self.last_epoch = epoch    
         self.end_time = (time.time() - start_time)
-
-    def learning_time(self):
-        return self.end_time
-
-    def last_epoch(self):
-        return self.last_epoch

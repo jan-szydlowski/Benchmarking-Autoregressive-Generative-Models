@@ -1,11 +1,11 @@
-def calculate_variational_free_energy(beta, log_prob, spin_array):
+def calculate_variational_free_energy(beta, log_prob, spin_array, batch_size, n):
         """
         Calculate variational free energy for each sample:
 
             F_q(x) = E(x) + (1 / beta) * log q(x)
         """
 
-        energy = calculate_Ising_energy(spin_array)
+        energy = calculate_Ising_energy(n, batch_size ,spin_array)
         vfe = energy + (1 / beta) * log_prob
 
         return vfe

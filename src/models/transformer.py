@@ -44,7 +44,7 @@ class Head(nn.Module):
         out = wei @ v
 
         return out
-
+#Tu skorzystać z metody torcha
 
 # =========================
 # Multi-head self-attention
