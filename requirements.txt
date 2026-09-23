@@ -1,0 +1,9 @@
+ipython==9.17.1
+jupyter-client==8.10.0
+jupyter-core==5.9.1
+matplotlib==3.11.2
+numpy==2.5.3
+packaging==26.3
+pandas==3.0.6
+pyyaml==6.0.3
+torch==2.14.0

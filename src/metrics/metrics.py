@@ -76,7 +76,7 @@ def ESS_info(model, nb_batches):
 
 def convergence(model):
     """Returns models epoch after succesfuly learning distribution"""
-    return model.last_epoch
+    return model.last_epoch + 1
 
 def training_time(model):
     """Return training time"""
@@ -103,11 +103,13 @@ def get_vfe_mean_values(model):
     return torch.tensor(model.vfe_mean) / (model.n * model.n)
 
 """Evaluation"""
+@torch.no_grad()
 def evaluate_model(model):
     vfe_metrics = compare_analitycal(model, 100)
     ess_metrics = ESS_info(model, 10)
 
     evaluation = {
+        "Model": model.model_name,
         "Mean_vfe": vfe_metrics['mean_vfe'],
         "Std_vfe": vfe_metrics['std_vfe'],
         "VFE_abs_err": vfe_metrics['absolute_error'],
@@ -132,3 +134,13 @@ def load_config(path):
         config = yaml.safe_load(f)
 
     return config
+
+"""Model variables storage"""
+class Model_Storage():
+    def __init__(self, Model):
+        self.magnetization = Model.magnetization
+        self.vfe_mean = Model.vfe_mean
+        self.ess_arr = Model.ess_arr
+        self.energy_per_spin_arr = Model.energy_per_spin_arr
+        self.model_name = Model.model_name
+        self.n = Model.n

@@ -33,6 +33,7 @@ class Trainer():
         self.beta = beta
         self.lr = lr
         self.batch_size = batch_size
+        self.model_name = model
 
         if model == "transformer":
             self.model = Transformer_MODEL(
@@ -150,7 +151,7 @@ class Trainer():
                     f"ESS_energy: {ESS_energy.item():.4f}, "
                     f"VFE: {vfe.mean().item():.4f}"
                 )
-            if abs(vfe.mean().item() - -2.6359026301137902) < 0.01:
+            if abs(vfe.mean().item() - 2.6359026301137902) < 0.01:
                 break
         self.last_epoch = epoch    
         self.end_time = (time.time() - start_time)
