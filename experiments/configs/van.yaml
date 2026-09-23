@@ -4,7 +4,7 @@ lattice_size: 8
 beta: 0.3
 
 training:
-  epochs: 1024
+  epochs: 10
   batch_size: 512
   learning_rate: 0.1
 

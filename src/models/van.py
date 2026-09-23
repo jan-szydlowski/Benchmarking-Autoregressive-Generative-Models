@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # =========================
 # Masked linear layer
@@ -74,9 +75,8 @@ class VAN_MODEL(nn.Module):
         self.network = nn.Sequential(*layers)
 
     def sample(self, batch_size):
-
-        device = self.network[0].linear.weight.device
-
+        device = next(self.parameters()).device
+        
         generated_spins = torch.zeros(
             batch_size,
             self.num_spins,

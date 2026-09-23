@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # =========================
 # Custom LSTM implementation
@@ -85,13 +86,13 @@ class MyLSTM(nn.Module):
         long_memory = torch.zeros(
             batch_size,
             self.hidden_size,
-            device=input.device
+            device=device
         )
 
         short_memory = torch.zeros(
             batch_size,
             self.hidden_size,
-            device=input.device
+            device=device
         )
 
         outputs = []
@@ -144,7 +145,6 @@ class LSTM_MODEL(nn.Module):
         self.output_layer = nn.Linear(self.hidden_size, 1)
 
     def sample(self, batch_size):
-
         device = next(self.parameters()).device
 
         generated_spins = torch.zeros(
@@ -198,7 +198,7 @@ class LSTM_MODEL(nn.Module):
 
                 current_input = torch.cat(
                     [lstm_input, row_feature, col_feature],
-                    dim=2
+                    dim=2,
                 )
 
             else:

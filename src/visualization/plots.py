@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
-from metrics.metrics import get_vfe_mean_values
+from src.metrics.metrics import get_vfe_mean_values
 
 def plot_mean_vfe_training(*Models):
     for i in range(len(Models)):
-        plt.plot(get_vfe_mean_values(Models[i]), label=f"Model {i+1}")
+        plt.plot(get_vfe_mean_values(Models[i][0]), label=f"Model {i+1}")
     plt.axhline(
         y=-2.6359026301137902,
         color="black",
@@ -18,7 +18,8 @@ def plot_mean_vfe_training(*Models):
 
 def plot_ESS_training(*Models):
     for i in range(len(Models)):
-        plt.plot(Models[i].ess_arr, label=f"Model {i+1}")
+        ess_table = [t.cpu() for t in Models[i][0].ess_arr]
+        plt.plot(ess_table, label=f"Model {i+1}")
     plt.xlabel("Epoch")
     plt.ylabel("ESS")
     plt.legend()
@@ -47,15 +48,21 @@ def plot_magnetization(*Models):
 def save_plots_same_model(*Models, model_name):
     plot_mean_vfe_training(Models)
     plt.savefig(f'results/figures/{model_name}_vfe.png')
+    plt.close()
     plot_ESS_training(Models)
     plt.savefig(f'results/figures/{model_name}_ESS.png')
+    plt.close()
 
 def save_plots_diff_model(*Models):
     plot_mean_vfe_training(Models)
     plt.savefig(f'results/figures/arch_VFE.png')
+    plt.close()
     plot_ESS_training(Models)
     plt.savefig(f'results/figures/arch_ESS.png')
+    plt.close()
     plot_energy(Models)
     plt.savefig(f'results/figures/arch_Energy.png')
+    plt.close()
     plot_magnetization(Models)
     plt.savefig(f'results/figures/arch_Magnetization.png')
+    plt.close()

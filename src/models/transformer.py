@@ -24,26 +24,19 @@ class Head(nn.Module):
         )
 
     def forward(self, x):
-        B, T, C = x.shape
 
         k = self.key(x)
         q = self.querry(x)
-
-        # Scaled dot-product attention
-        wei = q @ k.transpose(-2, -1) * C ** -0.5
-
-        # Causal mask prevents access to future tokens
-        tril = torch.tril(
-            torch.ones((T, T), device=current_device)
-        )
-        wei = wei.masked_fill(tril == 0, float("-inf"))
-        wei = F.softmax(wei, dim=-1)
-
-        # Weighted aggregation of values
         v = self.value(x)
-        out = wei @ v
+
+        out =  F.scaled_dot_product_attention(q,
+                                              k,
+                                              v,
+                                              is_causal=True)
 
         return out
+
+    
 #Tu skorzystać z metody torcha
 
 # =========================

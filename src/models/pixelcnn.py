@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # =========================
 # Masked convolution layer
@@ -108,8 +108,7 @@ class PixelCNN_MODEL(nn.Module):
         )
 
     def sample(self, batch_size):
-
-        device = self.network[0].weight.device
+        device = next(self.parameters()).device
 
         generated_spins = torch.zeros(
             batch_size,

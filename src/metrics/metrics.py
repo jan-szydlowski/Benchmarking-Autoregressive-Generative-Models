@@ -64,23 +64,23 @@ def ESS_info(model, nb_batches):
     for _ in range(nb_batches):
         estimates.append(sample_ESS(model))
 
-    estimates = np.array(estimates)
+    estimates_np = [t.cpu().detach().numpy() for t in estimates]
 
-    mean_ESS = estimates.mean()
-    std_ESS = estimates.std()
+    mean_ESS = np.mean(estimates_np)
+    std_ESS = np.std(estimates_np)
 
     return {
-        "mean ess": mean_ESS,
-        "std ess": std_ESS
+        "mean_ess": mean_ESS,
+        "std_ess": std_ESS
     }
 
 def convergence(model):
     """Returns models epoch after succesfuly learning distribution"""
-    return model.last_epoch()
+    return model.last_epoch
 
 def training_time(model):
     """Return training time"""
-    return model.learning_time()
+    return model.learning_time
 
 def generating_samples_time(model, nb_samples):
     """Returns time to generate given number of samples"""
@@ -89,13 +89,12 @@ def generating_samples_time(model, nb_samples):
         sampled_spins, log_prob = model.model.sample(model.batch_size)
 
     end_time = (time.time() - start_time)
-    print(f"---Generating {nb_samples} samples took {end_time} seconds ---")
 
-    return None
+    return end_time
 
 def number_of_params(model):
     """Return the number of all parameters"""
-    return sum(p.numel() for p in model.parameters())
+    return sum(p.numel() for p in model.model.parameters())
 
 
 """#Metrics For Plots"""
@@ -106,14 +105,16 @@ def get_vfe_mean_values(model):
 """Evaluation"""
 def evaluate_model(model):
     vfe_metrics = compare_analitycal(model, 100)
+    ess_metrics = ESS_info(model, 10)
 
     evaluation = {
         "Mean_vfe": vfe_metrics['mean_vfe'],
         "Std_vfe": vfe_metrics['std_vfe'],
         "VFE_abs_err": vfe_metrics['absolute_error'],
-        "ESS": ESS_info(model, 100),
+        "Mean_ESS": ess_metrics['mean_ess'],
+        "Std_ESS": ess_metrics['std_ess'],
         "Nb_of_params": number_of_params(model),
-        "Time_to_generate_samples": generating_samples_time(model, 10000),
+        "Time_to_generate_samples": generating_samples_time(model, 10),
         "Training epochs": convergence(model)
     }
     return evaluation

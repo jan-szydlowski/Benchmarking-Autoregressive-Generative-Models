@@ -1,0 +1,2 @@
+Mean_vfe,Std_vfe,VFE_abs_err,Mean_ESS,Std_ESS,Nb_of_params,Time_to_generate_samples,Training epochs
+-2.41467777967453,0.012912859450043605,0.2212248504392602,0.060055815,0.029128756,6401,1.7626104354858398,9
