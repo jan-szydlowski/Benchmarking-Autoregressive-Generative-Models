@@ -152,7 +152,7 @@ Causal masking prevents the model from accessing future values during autoregres
 │   └── tables/
 │   
 │
-├── train.py
+├── run_experiment.py
 ├── requirements.txt
 └── README.md
 ```

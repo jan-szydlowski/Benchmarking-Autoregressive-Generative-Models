@@ -4,6 +4,7 @@ import torch
 import time
 import csv
 import yaml
+from pathlib import Path
 
 """Jakość przybliżenia rozkładu"""
 def sample_vfe(model):
@@ -121,11 +122,20 @@ def evaluate_model(model):
     }
     return evaluation
 
-def save_result(evaluation: dict, model_name: str):
-    
-    with open(f"results/tables/{model_name}.csv", "w", newline="") as f:
+def save_result(evaluation: dict, folder: str, model_name: str):
+
+    path = Path(f"results/tables/{folder}/{model_name}.csv")
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    file_exists = path.exists()
+    file_is_empty = not file_exists or path.stat().st_size == 0
+
+    with open(path, "a", newline="") as f:
         w = csv.DictWriter(f, fieldnames=evaluation.keys())
-        w.writeheader()
+
+        if file_is_empty:
+            w.writeheader()
+
         w.writerow(evaluation)
 
 
@@ -144,3 +154,4 @@ class Model_Storage():
         self.energy_per_spin_arr = Model.energy_per_spin_arr
         self.model_name = Model.model_name
         self.n = Model.n
+        self.hiperparam_experiment = Model.hiperparam_experiment

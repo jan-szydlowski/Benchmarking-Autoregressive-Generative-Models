@@ -3,7 +3,6 @@ from src.trainer.trainer import Trainer
 from src.metrics.metrics import evaluate_model
 from src.metrics.metrics import save_result
 from src.metrics.metrics import Model_Storage
-from src.visualization.plots import save_plots_same_model
 from src.visualization.plots import save_plots_diff_model
 import torch
 import gc
@@ -13,10 +12,10 @@ from pathlib import Path
 def main():
 
     #Setting paths
-    path_transf = Path("experiments/configs/transformer.yaml")
-    path_lstm = Path("experiments/configs/lstm.yaml")
-    path_pixelcnn = Path("experiments/configs/pixelcnn.yaml")
-    path_van = Path("experiments/configs/van.yaml")
+    path_transf = Path("experiments/configs/best_models/transformer.yaml")
+    path_lstm = Path("experiments/configs/best_models/lstm.yaml")
+    path_pixelcnn = Path("experiments/configs/best_models/pixelcnn.yaml")
+    path_van = Path("experiments/configs/best_models/van.yaml")
 
 
     """===TRANSFORMER==="""
@@ -40,10 +39,8 @@ def main():
     
     print("--- Saving results ---")
     results = evaluate_model(transformer)
-    save_result(results, "Transformer")
+    save_result(results, "final_models", "comparison_table")
 
-    print("--- Creating plots ---")
-    save_plots_same_model(transformer, model_name="Transformer")
     transformer_data = Model_Storage(transformer)
 
     del results
@@ -73,10 +70,8 @@ def main():
     
     print("--- Saving results ---")
     results = evaluate_model(lstm)
-    save_result(results, "LSTM")
+    save_result(results, "final_models", "comparison_table")
 
-    print("--- Creating plots ---")
-    save_plots_same_model(lstm, model_name="LSTM")
     lstm_data = Model_Storage(lstm)
 
     del results
@@ -109,10 +104,7 @@ def main():
     print("--- Saving results ---")
     results = evaluate_model(pixelcnn)
     print("--- Creating plots ---")
-    save_result(results, "PIXELCNN")
-
-    print("--- Creating plots ---")
-    save_plots_same_model(pixelcnn, model_name="PIXELCNN")
+    save_result(results, "final_models", "comparison_table")
 
     pixelcnn_data = Model_Storage(pixelcnn)
 
@@ -143,10 +135,7 @@ def main():
     
     print("--- Saving results ---")
     results = evaluate_model(van)
-    save_result(results, "VAN")
-
-    print("--- Creating plots ---")
-    save_plots_same_model(van, model_name="VAN")
+    save_result(results, "final_models", "comparison_table")
 
     van_data = Model_Storage(van)
 
@@ -157,6 +146,6 @@ def main():
     gc.collect()
     torch.cuda.empty_cache()
 
-    save_plots_diff_model(lstm_data, van_data, transformer_data, pixelcnn_data)
+    save_plots_diff_model(lstm_data, van_data, transformer_data, pixelcnn_data, folder = "final_models")
 if __name__ == '__main__':
     main()

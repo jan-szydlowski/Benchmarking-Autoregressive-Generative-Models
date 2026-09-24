@@ -1,0 +1,14 @@
+model: pixelcnn
+
+lattice_size: 8
+beta: 0.3
+
+training:
+  epochs: 500
+  batch_size: 128
+  learning_rate: 0.001
+
+model_params:
+  channels: 64
+  kernel_size: 7
+  num_layers: 2

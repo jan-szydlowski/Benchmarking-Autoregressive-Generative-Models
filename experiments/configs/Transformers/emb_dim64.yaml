@@ -1,0 +1,14 @@
+model: transformer
+
+lattice_size: 8
+beta: 0.3
+
+training:
+  epochs: 200
+  batch_size: 1100
+  learning_rate: 0.01
+
+model_params:
+  embedding_dim: 64
+  num_heads: 4
+  num_layers: 1

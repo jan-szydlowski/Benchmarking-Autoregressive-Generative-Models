@@ -109,7 +109,7 @@ class PixelCNN_MODEL(nn.Module):
 
     def sample(self, batch_size):
         device = next(self.parameters()).device
-
+        
         generated_spins = torch.zeros(
             batch_size,
             self.num_spins,

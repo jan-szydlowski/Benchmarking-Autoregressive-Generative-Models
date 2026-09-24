@@ -9,7 +9,7 @@ from src.models.pixelcnn import PixelCNN_MODEL
 from src.models.lstm import LSTM_MODEL
 
 
-
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 class Trainer():
     def __init__(
         self,
@@ -20,12 +20,13 @@ class Trainer():
         batch_size,
         model,
         n_layers,
-        **Model_params
+        hiperparam_experiment=False,
+        **Model_params,
     ):
         """
         Trainer for the autoregressive Transformer model.
         """
-
+        self.hiperparam_experiment = hiperparam_experiment
         self.n = n
         self.num_spins = n*n
         self.n_layers = n_layers
@@ -46,19 +47,19 @@ class Trainer():
         if model == "van":
             self.model = VAN_MODEL(n=n, 
                                nb_layers=self.n_layers
-                               )
+                               ).to(device)
             
         if model == "pixelcnn":
             self.model = PixelCNN_MODEL(n=n, 
                                kernel_size=Model_params['kernel_size'], 
                                num_of_layers=self.n_layers, 
                                channels=Model_params['channels']
-                               )
+                               ).to(device)
             
         if model == "lstm":
             self.model = LSTM_MODEL(n=n, 
                                spin_placement_info=Model_params['spin_placement_info']
-                               )
+                               ).to(device)
 
 
     def train_model(self):
