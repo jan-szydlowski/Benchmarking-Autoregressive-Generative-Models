@@ -7,10 +7,25 @@ from src.visualization.plots import save_plots_same_model
 import torch
 import gc
 from pathlib import Path
+import random
+import numpy as np
+
+
+def set_seed(seed=235):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
 def main():
-
+    set_seed(seed=7)
     #Setting paths
     batch_size256 = Path("experiments/configs/Transformers/batch_size256.yaml")
     batch_size512 = Path("experiments/configs/Transformers/batch_size512.yaml")
@@ -37,6 +52,7 @@ def main():
     i=0
     for path_table in hiperparameters_table:
         data_table=[]
+        k=0
         for path in path_table:
             print("---Initializing TRANSFORMER model ---")
 
@@ -57,7 +73,7 @@ def main():
             print("--- Training complete ---")
             
             print("--- Saving results ---")
-            results = evaluate_model(model)
+            results = evaluate_model(model, hiperparam_tested=model_names[i][k])
             save_result(results, "hiperparam_test", "Transformer")
 
             data = Model_Storage(model)
@@ -68,7 +84,8 @@ def main():
             del data
             gc.collect()
             torch.cuda.empty_cache()
-
+            k+=1
+            
         save_plots_same_model(data_table, folder = "hiperparam_test", hiperparam_name=hiperparameters_names[i], model_names=model_names[i])
         i+=1
 

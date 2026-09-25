@@ -105,12 +105,12 @@ def get_vfe_mean_values(model):
 
 """Evaluation"""
 @torch.no_grad()
-def evaluate_model(model):
+def evaluate_model(model, hiperparam_tested=None):
     vfe_metrics = compare_analitycal(model, 100)
     ess_metrics = ESS_info(model, 10)
 
     evaluation = {
-        "Model": model.model_name,
+        "Model": [model.model_name if hiperparam_tested == None else hiperparam_tested],
         "Mean_vfe": vfe_metrics['mean_vfe'],
         "Std_vfe": vfe_metrics['std_vfe'],
         "VFE_abs_err": vfe_metrics['absolute_error'],
