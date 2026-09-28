@@ -24,7 +24,7 @@ def set_seed(seed=235):
     torch.backends.cudnn.benchmark = False
 
 
-def main():
+def run_van():
     set_seed(seed=7)
     #Setting paths
     batch_size256 = Path("experiments/configs/Van/batch_size256.yaml")
@@ -91,4 +91,4 @@ def main():
         del data_table
 
 if __name__ == "__main__":
-    main()
+    run_van()

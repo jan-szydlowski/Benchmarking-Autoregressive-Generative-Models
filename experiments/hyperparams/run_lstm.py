@@ -23,7 +23,7 @@ def set_seed(seed=235):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-def main():
+def run_lstm():
 
     set_seed(7)
 
@@ -93,4 +93,4 @@ def main():
         del data_table
 
 if __name__ == "__main__":
-    main()
+    run_lstm()

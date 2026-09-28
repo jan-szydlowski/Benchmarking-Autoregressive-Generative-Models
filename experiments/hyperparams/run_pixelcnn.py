@@ -24,7 +24,7 @@ def set_seed(seed=235):
     torch.backends.cudnn.benchmark = False
 
 
-def main():
+def run_pixelcnn():
     set_seed(seed=7)
     #Setting paths
     batch_size128 = Path("experiments/configs/Pixelcnn/batch_size128.yaml")
@@ -94,4 +94,4 @@ def main():
         del data_table
 
 if __name__ == "__main__":
-    main()
+    run_pixelcnn()
