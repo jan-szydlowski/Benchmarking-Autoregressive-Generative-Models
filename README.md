@@ -28,14 +28,24 @@ The models are evaluated using:
 
 ### Final comparison
 
-| Model       | VFE | ESS | Parameters | Training Time | Sampling Time |
-| ----------- | --: | --: | ---------: | ------------: | ------------: |
-| VAN         | TBD | TBD |        TBD |           TBD |           TBD |
-| PixelCNN    | TBD | TBD |        TBD |           TBD |           TBD |
-| LSTM        | TBD | TBD |        TBD |           TBD |           TBD |
-| Transformer | TBD | TBD |        TBD |           TBD |           TBD |
+| Model       | VFE       | ESS      | Parameters | Training Epochs | Sampling Time |
+| ----------- | --------: | -------: | ---------: | --------------: | ------------: |
+| VAN         | -2.635120 | 0.970338 |      8,320 |            1000 |      0.307426 |
+| PixelCNN    | -2.632983 | 0.899292 |    207,233 |            1000 |      0.891203 |
+| LSTM        | -2.633827 | 0.922628 |      9,046 |            1000 |      0.503861 |
+| Transformer | -2.634910 | 0.959089 |     54,337 |            1000 |      1.704755 |
 
-The table will be updated as the final experiments are completed.
+### Metrics description
+
+- **VFE** – average Variational Free Energy computed from 100 independent sampling runs of the trained model. It measures how well the learned distribution approximates the target distribution. Values closer to the analytical reference indicate better performance.
+
+- **ESS** – average Effective Sample Size computed from 10 independent sampling runs. It reflects the quality of the generated samples and the efficiency of the learned distribution. Values closer to 1 indicate better sampling quality.
+
+- **Parameters** – total number of trainable parameters in the model, representing its size and model complexity.
+
+- **Training Epochs** – total number of training epochs used for the final experiment. All models were trained for the same number of epochs to ensure a fairer comparison.
+
+- **Sampling Time** – time required to generate samples during the final evaluation. Lower values correspond to faster sample generation.
 
 ---
 
@@ -43,15 +53,11 @@ The table will be updated as the final experiments are completed.
 
 ### Variational Free Energy
 
-![VFE comparison](results/figures/vfe_comparison.png)
+![VFE comparison](results/figures/final_models/models_VFE.png)
 
 ### Effective Sample Size
 
-![ESS comparison](results/figures/ess_comparison.png)
-
-### Generated Samples
-
-![Generated samples](results/figures/generated_samples.png)
+![ESS comparison](results/figures/final_models/models_ESS.png)
 
 ---
 
@@ -120,29 +126,28 @@ Causal masking prevents the model from accessing future values during autoregres
 ## Project Structure
 
 ```text
+## Project Structure
+
+```text
 .
-├── src/
-│   ├── models/
-│   │   ├── van.py
-│   │   ├── pixelcnn.py
-│   │   ├── lstm.py
-│   │   └── transformer.py
-│   │
-│   ├── training/
-│   │   └── trainer.py
-│   │
-│   ├── metrics/
-│   │    └── metrics.py
-│   │
-│   └── physics/
-│        └── energy.py
-│
 ├── experiments/
-│   └── configs/
-│       ├── van.yaml
-│       ├── pixelcnn.yaml
-│       ├── lstm.yaml
-│       └── transformer.yaml
+│   ├── configs/
+│   │   ├── best_models/
+│   │   │   ├── lstm.yaml
+│   │   │   ├── pixelcnn.yaml
+│   │   │   ├── transformer.yaml
+│   │   │   └── van.yaml
+│   │   │
+│   │   ├── Lstms/
+│   │   ├── PixelCnns/
+│   │   ├── Transformers/
+│   │   └── Vans/
+│   │
+│   └── hyperparams/
+│       ├── run_lstm.py
+│       ├── run_pixelcnn.py
+│       ├── run_transformer.py
+│       └── run_van.py
 │
 ├── notebooks/
 │   └── analysis.ipynb
@@ -150,13 +155,39 @@ Causal masking prevents the model from accessing future values during autoregres
 ├── results/
 │   ├── figures/
 │   └── tables/
-│   
+│
+├── src/
+│   ├── models/
+│   │   ├── lstm.py
+│   │   ├── pixelcnn.py
+│   │   ├── transformer.py
+│   │   └── van.py
+│   │
+│   ├── metrics/
+│   │   └── metrics.py
+│   │
+│   ├── trainer/
+│   │   └── trainer.py
+│   │
+│   └── visualization/
+│       └── plots.py
 │
 ├── run_experiment.py
 ├── requirements.txt
 └── README.md
 ```
-
+Directory description
+- experiments/configs/ – YAML configuration files defining model architectures and training hyperparameters.
+- experiments/configs/best_models/ – configurations selected for the final comparison between the four architectures.
+- experiments/hyperparams/ – scripts used to run architecture-specific hyperparameter experiments.
+- src/models/ – implementations of VAN, PixelCNN, LSTM and Transformer models.
+- src/trainer/ – shared training logic used by the models.
+- src/metrics/ – evaluation functions for VFE, ESS and other experiment metrics.
+- src/visualization/ – functions responsible for generating and saving plots.
+- results/tables/ – numerical results generated during experiments.
+- results/figures/ – generated plots and model comparison figures.
+- notebooks/analysis.ipynb – analysis and visualization of the experimental results.
+- run_experiment.py – main entry point used to launch hyperparameter experiments, the final comparison, or both.
 ---
 
 ## Experimental Pipeline
@@ -278,9 +309,7 @@ The notebook contains:
 4. ESS comparison
 5. energy analysis
 6. magnetization analysis
-7. generated sample visualization
-8. computational performance comparison
-9. final conclusions
+7. final conclusions
 
 The notebook is used for analysis and visualization only. Model implementation and training logic are kept in the source files.
 
@@ -323,46 +352,53 @@ pip install -r requirements.txt
 
 ## Running Experiments
 
-Example:
+Experiments are launched through the main script:
 
 ```bash
-python train.py --config experiments/configs/transformer.yaml
+python run_experiment.py <mode>
 ```
 
-Results are saved to:
+The first command-line argument determines which experiments will be executed.
+
+Available options are:
+
+- `a` — runs **all experiments**, including hyperparameter tests and the final model comparison,
+- `h` — runs **only hyperparameter experiments**,
+- `e` — runs **only the final experiment**, comparing the selected best configurations of all models.
+
+Examples:
+
+Run all experiments:
+
+```bash
+python run_experiment.py a
+```
+
+Run only hyperparameter tests:
+
+```bash
+python run_experiment.py h
+```
+
+Run only the final model comparison:
+
+```bash
+python run_experiment.py e
+```
+
+The final experiment trains and evaluates the selected best configurations of:
 
 ```text
-results/tables/
+Transformer
+    ↓
+LSTM
+    ↓
+PixelCNN
+    ↓
+VAN
 ```
 
-and generated plots to:
-
-```text
-results/figures/
-```
-
----
-
-## Reproducibility
-
-To make the comparison reliable, models should be evaluated using comparable experimental conditions.
-
-Important controls include:
-
-* identical lattice size
-* identical inverse temperature
-* comparable training budgets
-* fixed random seeds
-* multiple independent training runs
-* identical evaluation procedures
-
-Where possible, results should be reported as:
-
-```text
-mean ± standard deviation
-```
-
-across multiple runs.
+After training, evaluation results are saved and comparison plots are generated.
 
 ---
 
@@ -378,9 +414,3 @@ across multiple runs.
 * Git
 
 ---
-
-## Key Idea
-
-This project is not only about determining which architecture achieves the lowest loss.
-
-The main objective is to understand **why different autoregressive architectures behave differently** and what trade-offs they introduce in terms of sample quality, convergence and computational efficiency.

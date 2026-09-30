@@ -29,12 +29,12 @@ def set_seed(seed=235):
 
 def main():
     set_seed(7)
+    try:
+        test_kind = sys.argv[0]
+    except:
+        print("Missing first argument")
 
-    hiper_param_test = sys.argv[0]
-
-    model_comparison_test = sys.argv[1]
-
-    if model_comparison_test:
+    if test_kind == 'a' or test_kind == 'e':
         #Setting paths
         path_transf = Path("experiments/configs/best_models/transformer.yaml")
         path_lstm = Path("experiments/configs/best_models/lstm.yaml")
@@ -171,7 +171,7 @@ def main():
         torch.cuda.empty_cache()
 
     save_plots_diff_model(lstm_data, van_data, transformer_data, pixelcnn_data, folder = "final_models")
-    if hiper_param_test:
+    if test_kind == 'a' or test_kind == 'h':
         print("===Starting Hiperparam Test===")
         run_pixelcnn()
         run_van()
